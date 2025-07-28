@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Listado de Vuelos Disponibles</h2>
+    <ul>
+        {% for vuelo in vuelos %}
+            <li>
+                <a href="{% url 'detalle_vuelo' vuelo.id %}">
+                    Vuelo de {{ vuelo.origen }} a {{ vuelo.destino }} el {{ vuelo.fecha_salida }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+  <h2>¡Reserva exitosa! 🎉</h2>
+  <p>Gracias por reservar con nosotros, {{ nombre }}.</p>
+  <p>Tu asiento fue asignado correctamente para el vuelo <strong>{{ vuelo.numero }}</strong>.</p>
+  <a href="{% url 'listar_vuelos' %}" class="btn btn-success mt-3">Volver al listado de vuelos</a>
+</div>
+{% endblock %}

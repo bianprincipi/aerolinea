@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Detalles del Vuelo</h2>
+    <p><strong>Origen:</strong> {{ vuelo.origen }}</p>
+    <p><strong>Destino:</strong> {{ vuelo.destino }}</p>
+    <p><strong>Fecha:</strong> {{ vuelo.fecha_salida }}</p>
+
+    <h3>Asientos disponibles</h3>
+    <ul>
+        {% for asiento in asientos %}
+            <li>
+                Asiento {{ asiento.numero }} -
+                <form method="post" action="{% url 'reservar_asiento' vuelo.id asiento.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Reservar</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>No hay asientos disponibles.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
