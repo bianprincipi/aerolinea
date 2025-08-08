@@ -121,3 +121,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn="https://1f3fa42c3bdd2842d52eaf0645fb41fb@o4509805690028032.ingest.us.sentry.io/4509805727383554",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)
