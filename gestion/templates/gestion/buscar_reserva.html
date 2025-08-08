@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Reserva - AeroGestión</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+            padding-top: 100px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.15);
+        }
+
+        .page-header {
+            color: white;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .search-section {
+            padding: 40px;
+        }
+
+        .form-control-modern {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-modern:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #FFD700;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+        }
+
+        .form-control-modern::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-label-modern {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+            color: #333;
+        }
+
+        .alert-modern {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .alert-warning-modern {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+
+        .alert-success-modern {
+            background: rgba(25, 135, 84, 0.1);
+            border-color: rgba(25, 135, 84, 0.3);
+        }
+
+        .reserva-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            margin-top: 2rem;
+            color: white;
+        }
+
+        .section-header {
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #FFD700;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-programado { background: linear-gradient(135deg, #007bff, #0056b3); }
+        .status-en_vuelo { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
+        .status-completado { background: linear-gradient(135deg, #28a745, #1e7e34); }
+        .status-cancelado { background: linear-gradient(135deg, #dc3545, #a71e2a); }
+        .status-activa { background: linear-gradient(135deg, #28a745, #1e7e34); }
+
+        .highlight-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .highlight-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .highlight-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .highlight-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .help-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .help-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .help-title {
+            color: #FFD700;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .help-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .help-list li:last-child {
+            border-bottom: none;
+        }
+
+        .help-list i {
+            color: #FFD700;
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .search-section {
+                padding: 30px 20px;
+            }
+            
+            .reserva-card {
+                padding: 20px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .highlight-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-plane me-2"></i>AeroGestión</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-home me-1"></i>Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-plane-departure me-1"></i>Vuelos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-search me-1"></i>Buscar Reserva</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i>Iniciar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- Page Header -->
+        <div class="page-header fade-in">
+            <h1 class="page-title">
+                <i class="fas fa-search me-3"></i>Buscar Reserva
+            </h1>
+            <p class="page-subtitle">Ingresa tu código de reserva para consultar el estado de tu vuelo</p>
+        </div>
+
+        <!-- Search Card -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card fade-in">
+                    <div class="search-section">
+                        <form method="post" class="mb-4">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-8">
+                                    <label for="codigo_reserva" class="form-label-modern">
+                                        <i class="fas fa-barcode me-2"></i>Código de Reserva
+                                    </label>
+                                    <input type="text" class="form-control form-control-modern" 
+                                           id="codigo_reserva" name="codigo_reserva" 
+                                           placeholder="ej: 12345678-1234-1234-1234-123456789012"
+                                           required>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-search w-100">
+                                        <i class="fas fa-search me-2"></i>Buscar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <!-- Error Alert (simulate for demo) -->
+                        <!-- 
+                        <div class="alert alert-modern alert-warning-modern">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No se encontró ninguna reserva con ese código
+                        </div>
+                        -->
+                        
+                        <!-- Success - Reserva encontrada (demo) -->
+                        <div class="alert alert-modern alert-success-modern fade-in">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>¡Reserva encontrada!</strong> Se muestran los detalles a continuación.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reserva Details -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-10">
+                <div class="reserva-card fade-in">
+                    <!-- Flight Info -->
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="fas fa-plane me-2"></i>Información del Vuelo
+                        </h3>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Ruta</div>
+                            <div class="info-value">Buenos Aires → Córdoba</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fecha de Salida</div>
+                            <div class="info-value">15 de Agosto, 2025 - 14:30</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fecha de Llegada</div>
+                            <div class="info-value">15 de Agosto, 2025 - 16:45</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Avión</div>
+                            <div class="info-value">Boeing 737-800</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Estado del Vuelo</div>
+                            <div class="info-value">
+                                <span class="status-badge status-programado">Programado</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passenger Info -->
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="fas fa-user me-2"></i>Información del Pasajero
+                        </h3>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Nombre Completo</div>
+                            <div class="info-value">Juan Carlos Rodríguez</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Documento</div>
+                            <div class="info-value">DNI: 12.345.678</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">juan.rodriguez@email.com</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Teléfono</div>
+                            <div class="info-value">+54 9 358 4123456</div>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Details -->
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="fas fa-ticket-alt me-2"></i>Detalles de la Reserva
+                        </h3>
+                    </div>
+                    
+                    <div class="highlight-cards">
+                        <div class="highlight-card">
+                            <span class="highlight-value">12A</span>
+                            <div class="highlight-label">Asiento</div>
+                        </div>
+                        <div class="highlight-card">
+                            <span class="highlight-value">Ejecutiva</span>
+                            <div class="highlight-label">Clase</div>
+                        </div>
+                        <div class="highlight-card">
+                            <span class="highlight-value">$45,990</span>
+                            <div class="highlight-label">Precio</div>
+                        </div>
+                        <div class="highlight-card">
+                            <span class="status-badge status-activa">Activa</span>
+                            <div class="highlight-label mt-2">Estado</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Código de Reserva</div>
+                            <div class="info-value">
+                                <code style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 8px;">
+                                    12345678-1234-1234-1234-123456789012
+                                </code>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fecha de Reserva</div>
+                            <div class="info-value">10 de Agosto, 2025</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Código de Boleto</div>
+                            <div class="info-value">
+                                <code style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 8px;">
+                                    BOL-2025-001234
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Alert -->
+                    <div class="alert alert-modern" style="background: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.3); margin-top: 30px;">
+                        <div class="text-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Tu reserva está activa.</strong> Recuerda llegar al aeropuerto con 2 horas de anticipación para vuelos nacionales.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="help-section">
+            <div class="help-card fade-in">
+                <h5 class="help-title">
+                    <i class="fas fa-question-circle me-2"></i>¿Dónde encuentro mi código?
+                </h5>
+                <ul class="help-list">
+                    <li><i class="fas fa-envelope"></i>En el email de confirmación</li>
+                    <li><i class="fas fa-mobile-alt"></i>En el SMS que recibiste</li>
+                    <li><i class="fas fa-receipt"></i>En el comprobante de reserva</li>
+                    <li><i class="fas fa-print"></i>En tu boleto impreso</li>
+                </ul>
+            </div>
+            
+            <div class="help-card fade-in">
+                <h5 class="help-title">
+                    <i class="fas fa-headset me-2"></i>¿Necesitas ayuda?
+                </h5>
+                <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+                    Nuestro equipo de soporte está disponible las 24 horas del día.
+                </p>
+                <ul class="help-list">
+                    <li><i class="fas fa-phone"></i>+54 9 358 4123456</li>
+                    <li><i class="fas fa-envelope"></i>soporte@aerogestion.com</li>
+                    <li><i class="fab fa-whatsapp"></i>WhatsApp: +54 9 358 4123456</li>
+                    <li><i class="fas fa-comments"></i>Chat en vivo 24/7</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 60px;"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

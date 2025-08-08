@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte de Pasajeros - Vuelo {{ vuelo.origen }} → {{ vuelo.destino }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="fas fa-users"></i> Lista de Pasajeros</h2>
+        <p class="text-muted">Vuelo {{ vuelo.origen }} → {{ vuelo.destino }} | {{ vuelo.fecha_salida }}</p>
+    </div>
+    <div>
+        <button onclick="window.print()" class="btn btn-secondary me-2">
+            <i class="fas fa-print"></i> Imprimir
+        </button>
+        <a href="{% url 'listar_vuelos_reporte' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<!-- Información del vuelo -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-plane"></i> Información del Vuelo</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Origen:</strong><br>
+                        <span class="text-muted">{{ vuelo.origen }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Destino:</strong><br>
+                        <span class="text-muted">{{ vuelo.destino }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Fecha y Hora:</strong><br>
+                        <span class="text-muted">{{ vuelo.fecha_salida }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Avión:</strong><br>
+                        <span class="text-muted">{{ vuelo.avion.modelo }}</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <strong>Total de Pasajeros:</strong><br>
+                        <span class="badge bg-success fs-6">{{ total_pasajeros }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Capacidad del Avión:</strong><br>
+                        <span class="text-muted">{{ vuelo.avion.capacidad }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Ocupación:</strong><br>
+                        <span class="text-muted">{{ total_pasajeros|mul:100|div:vuelo.avion.capacidad|floatformat:1 }}%</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Estado:</strong><br>
+                        <span class="badge 
+                            {% if vuelo.estado == 'programado' %}bg-primary
+                            {% elif vuelo.estado == 'en_vuelo' %}bg-warning
+                            {% elif vuelo.estado == 'completado' %}bg-success
+                            {% else %}bg-danger
+                            {% endif %}">
+                            {{ vuelo.get_estado_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de pasajeros -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Lista de Pasajeros ({{ total_pasajeros }})</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if reservas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Asiento</th>
+                                    <th>Pasajero</th>
+                                    <th>Documento</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Tipo Asiento</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reserva in reservas %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-info">{{ reserva.asiento.numero }}</span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ reserva.pasajero.nombre }}</strong><br>
+                                        <small class="text-muted">{{ reserva.pasajero.get_tipo_documento_display }}</small>
+                                    </td>
+                                    <td>{{ reserva.pasajero.documento }}</td>
+                                    <td>
+                                        <a href="mailto:{{ reserva.pasajero.email }}">{{ reserva.pasajero.email }}</a>
+                                    </td>
+                                    <td>
+                                        <a href="tel:{{ reserva.pasajero.telefono }}">{{ reserva.pasajero.telefono }}</a>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if reserva.asiento.tipo == 'economico' %}bg-secondary
+                                            {% elif reserva.asiento.tipo == 'premium' %}bg-warning
+                                            {% else %}bg-success
+                                            {% endif %}">
+                                            {{ reserva.asiento.get_tipo_display }}
+                                        </span>
+                                    </td>
+                                    <td>${{ reserva.precio }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if reserva.estado == 'activa' %}bg-success
+                                            {% elif reserva.estado == 'completada' %}bg-primary
+                                            {% else %}bg-danger
+                                            {% endif %}">
+                                            {{ reserva.get_estado_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h5>No hay pasajeros registrados</h5>
+                        <p class="text-muted">Aún no se han realizado reservas para este vuelo.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if reservas %}
+<!-- Resumen por tipo de asiento -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Distribución por Tipo de Asiento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    {% regroup reservas by asiento.tipo as tipos_asiento %}
+                    {% for tipo in tipos_asiento %}
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-primary">{{ tipo.list|length }}</h4>
+                            <p class="mb-0">{{ tipo.grouper|capfirst }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Estilo para impresión -->
+<style>
+@media print {
+    .btn, .navbar, .footer {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .badge {
+        color: #000 !important;
+        background-color: #fff !important;
+        border: 1px solid #000 !important;
+    }
+}
+</style>
+
+{% endblock %}
