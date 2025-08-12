@@ -13,6 +13,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 
+
 # Vista de inicio
 @login_required
 def dashboard(request):

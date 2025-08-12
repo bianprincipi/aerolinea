@@ -14,6 +14,7 @@ urlpatterns = [
     # Autenticación
     path('logout/', views.logout_view, name='logout'),
     
+    
     # Gestión de vuelos
     path('vuelos/', views.lista_vuelos, name='lista_vuelos'),
     path('vuelos/<int:vuelo_id>/', views.detalle_vuelo, name='detalle_vuelo'),
