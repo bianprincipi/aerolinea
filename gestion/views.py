@@ -6,46 +6,58 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count, Q
+from django.contrib.auth.forms import UserCreationForm  # <-- agregado para registro
 from .models import Vuelo, Asiento, Pasajero, Reserva, Boleto, Avion
 import uuid
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 
 # Vista de inicio
-def home(request):
-    """Vista principal del sistema"""
+@login_required
+def dashboard(request):
+    """vista principal del sistema -dashboard"""
     context = {
         'total_vuelos': Vuelo.objects.count(),
         'vuelos_hoy': Vuelo.objects.filter(fecha_salida__date=timezone.now().date()).count(),
         'total_reservas': Reserva.objects.count(),
         'reservas_activas': Reserva.objects.filter(estado='activa').count(),
     }
-    return render(request, 'gestion/home.html', context)
+    return render(request, 'gestion/dashboard.html', context)
+
+# Registro de usuario
+def register_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Registro exitoso. Ya podés iniciar sesión.")
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'gestion/register.html', {'form': form})
 
 # Autenticación
 def login_view(request):
-    """Vista de login personalizada"""
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
+        form = AuthenticationForm(request=request, data=request.POST)
+        if form.is_valid():
+            user = fomr.get_user()
             login(request, user)
-            messages.success(request, f'¡Bienvenido, {user.first_name or user.username}!')
-            return redirect('home')
-        else:
-            messages.error(request, 'Credenciales inválidas')
+            return redirect('dashboard')
+        else: 
+            messages.error(request, 'Usuario o contraseña incorrectos.')
+    else: 
+        form = AuthenticationForm()
     
-    return render(request, 'registration/login.html')
+    return render(request, 'registration/login.html', {'form': form})
 
 def logout_view(request):
-    """Vista de logout"""
     logout(request)
-    messages.info(request, 'Has cerrado sesión exitosamente')
     return redirect('login')
 
 # Gestión de Vuelos
+@login_required
 def lista_vuelos(request):
     """Lista todos los vuelos disponibles"""
     vuelos = Vuelo.objects.select_related('avion').filter(
@@ -66,6 +78,7 @@ def lista_vuelos(request):
     
     return render(request, 'gestion/vuelos.html', {'vuelos': vuelos})
 
+@login_required
 def detalle_vuelo(request, vuelo_id):
     """Detalle de un vuelo específico con asientos disponibles"""
     vuelo = get_object_or_404(Vuelo, id=vuelo_id)
@@ -89,6 +102,7 @@ def detalle_vuelo(request, vuelo_id):
     })
 
 # Sistema de Reservas
+@login_required
 def crear_reserva(request, vuelo_id, asiento_id):
     """Crear una nueva reserva"""
     vuelo = get_object_or_404(Vuelo, id=vuelo_id)

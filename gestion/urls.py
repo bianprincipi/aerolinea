@@ -2,11 +2,16 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Página principal
-    path('', views.home, name='home'),
+    # Página principal --> te redirige al login.
+    path('', views.login_view, name='login'),
     
+    # dashboard/home (solo dsp del login)
+    path('dashboard/', views.dashboard, name='dashboard'),
+
+    # Registro nuevo usuario
+    path('register/', views.register_view, name='register'),
+
     # Autenticación
-    path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     
     # Gestión de vuelos

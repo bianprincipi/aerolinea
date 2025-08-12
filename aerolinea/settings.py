@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'gestion',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -116,6 +118,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -131,3 +135,13 @@ sentry_sdk.init(
     # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
     send_default_pii=True,
 )
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+# Configuración de autenticación
+LOGIN_URL = '/login/'  # porque el login_view está en path '' con nombre 'home'
+LOGIN_REDIRECT_URL = '/dashboard/'  # redirigir después del login
+LOGOUT_REDIRECT_URL = 'login'  # redirigir después del logout
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # para pruebas de mail
